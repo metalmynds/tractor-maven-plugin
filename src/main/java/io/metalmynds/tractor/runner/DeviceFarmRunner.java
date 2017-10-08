@@ -204,13 +204,11 @@ public class DeviceFarmRunner
         Upload appUpload = null;
 
         try {
-            if (!StringUtils.isNullOrEmpty(applicationFilename)) {
-                if (FileUtils.fileExists(applicationFilename)) {
-                    appUpload = client.uploadApp(project, applicationFilename);
-                    getLog().debug(String.format("Upload Mobile Application Arn: %s", appUpload.getArn()));
-                } else {
-                    throw new FileNotFoundException(applicationFilename);
-                }
+            if (Files.exists(Paths.get(applicationFilename))) {
+                appUpload = client.uploadApp(project, applicationFilename);
+                getLog().debug(String.format("Upload Mobile Application Arn: %s", appUpload.getArn()));
+            } else {
+                throw new FileNotFoundException(applicationFilename);
             }
         } catch (Exception ex) {
             throw new MojoExecutionException("Upload System Under Test Package Failed!", ex);
@@ -546,7 +544,6 @@ public class DeviceFarmRunner
         ScheduleRunResult run = client.scheduleRun(project.getArn(), runName, testSchedule.getTestPackageArn(), devicePool.getArn(), testSchedule, runTimeoutMinutes, runConfiguration);
 
         getLog().debug(String.format("Scheduled Run Arn: %s", run.getRun().getArn()));
-
 
 
     }
