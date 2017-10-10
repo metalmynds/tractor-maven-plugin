@@ -758,7 +758,7 @@ public class DeviceFarmRunner
 
         String runName = String.format("%s_%s", runNamePrefix, UUID.randomUUID().toString());
 
-        getLog().info(String.format("Starting Run %s", runName));
+        getLog().info(String.format("Starting Execution of %s", runName));
 
         ScheduleRunResult runResult = client.scheduleRun(project.getArn(), runName, testSchedule.getTestPackageArn(), devicePool.getArn(), testSchedule, runTimeoutMinutes, runConfiguration);
 
