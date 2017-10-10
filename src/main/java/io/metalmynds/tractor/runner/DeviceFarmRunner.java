@@ -368,7 +368,7 @@ public class DeviceFarmRunner
             client = new AWSDeviceFarm(credentials);
         }
 
-        getLog().info(String.format("Locating Project %s", projectName));
+        getLog().info(String.format("Locating Project '%s'", projectName));
 
         Project project;
 
@@ -388,10 +388,12 @@ public class DeviceFarmRunner
         try {
 
             devicePool = client.getDevicePool(project, devicePoolName);
+
+            getLog().info(String.format("Located Device Pool '%s'", devicePoolName));
+
             if (getLog().isDebugEnabled()) {
                 getLog().debug(String.format("Device Pool: %s", devicePool.getArn()));
             }
-            getLog().info(String.format("Located Device Pool %s", devicePoolName));
 
         } catch (AWSDeviceFarmException ex) {
             throw new MojoExecutionException(String.format("Finding Device Pool '%s' Failed!", devicePoolName), ex);
@@ -840,7 +842,7 @@ public class DeviceFarmRunner
         ScheduleRunResult runResult = client.scheduleRun(project.getArn(), runName, appUpload.getArn(), devicePool.getArn(), testSchedule, runTimeoutMinutes, runConfiguration);
 
         if (getLog().isDebugEnabled()) {
-            getLog().debug(String.format("Run Result: %s", runResult.getRun().getArn()));
+            getLog().debug(String.format("Run: %s", runResult.getRun().getArn()));
         }
 
         ExecutionStatus status = null;
