@@ -319,7 +319,7 @@ public class DeviceFarmRunner
     /**
      * Tractor Test Driver Pooling Interval.
      */
-    @Parameter(defaultValue = "15000")
+    @Parameter(defaultValue = "5000")
     private long statusPollingInterval;
 
     public void execute()
@@ -780,6 +780,14 @@ public class DeviceFarmRunner
             }
         }
 
+        String runArn = runResult.getRun().getArn();
+
+        try {
+
+            client.getArtifacts(runArn, outputDirectory);
+        } catch (Exception ex) {
+            throw new MojoExecutionException(String.format("Error Downloading Test Run Artifacts! Run Arn: %s", runArn), ex);
+        }
     }
 
     private void displayBanner() {
