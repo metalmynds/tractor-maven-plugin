@@ -780,7 +780,7 @@ public class DeviceFarmRunner
 
         getLog().info(String.format("Starting Execution of %s", runName));
 
-        ScheduleRunResult runResult = client.scheduleRun(project.getArn(), runName, testSchedule.getTestPackageArn(), devicePool.getArn(), testSchedule, runTimeoutMinutes, runConfiguration);
+        ScheduleRunResult runResult = client.scheduleRun(project.getArn(), runName, appUpload.getArn(), devicePool.getArn(), testSchedule, runTimeoutMinutes, runConfiguration);
 
         getLog().debug(String.format("Run Result Arn: %s", runResult.getRun().getArn()));
 
