@@ -45,12 +45,10 @@ import java.util.*;
 public class DeviceFarmRunner
         extends AbstractMojo {
     /**
-     * Location of the file.
-     *
-     * @parameter property="project.build.directory"
-     * @required
+     * Project Build Directory
      */
-    private File outputDirectory;
+    @Parameter(defaultValue = "${project.build.directory}", readonly = true)
+    private String projectBuildDir;
 
     /**
      * Name of Device Farm Project.
@@ -322,6 +320,12 @@ public class DeviceFarmRunner
     @Parameter(defaultValue = "5000")
     private long statusPollingInterval;
 
+    /**
+     * Tractor Test Driver Pooling Interval.
+     */
+    @Parameter(defaultValue = "/artifacts")
+    private String downloadArtifactPath;
+
     public void execute()
             throws MojoExecutionException {
 
@@ -329,6 +333,12 @@ public class DeviceFarmRunner
 
         AWSDeviceFarm client;
         AWSCredentials credentials;
+
+        getLog().info(String.format("Test Framework %s", testFrameworkType.toString()));
+
+        if (testFrameworkType != TestType.BUILTIN_FUZZ && testFrameworkType != TestType.BUILTIN_EXPLORER) {
+            getLog().info(String.format("Appium Version %s", appiumVersion));
+        }
 
         getLog().info("Connecting to Device Farm");
 
@@ -353,7 +363,7 @@ public class DeviceFarmRunner
             project = client.getProject(projectName);
             getLog().debug(String.format("Project Arn: %s", project.getArn()));
         } catch (Exception ex) {
-            throw new MojoExecutionException(String.format("Get Device Farm Project '%s' failed!", projectName), ex);
+            throw new MojoExecutionException(String.format("Locate Device Farm Project '%s' failed!", projectName), ex);
         }
 
         // Setup Device Pool
@@ -364,11 +374,29 @@ public class DeviceFarmRunner
 
             devicePool = client.getDevicePool(project, devicePoolName);
 
-            getLog().info(String.format("Device Pool Name %s", devicePoolName));
+            getLog().info(String.format("Located Device Pool %s", devicePoolName));
 
         } catch (AWSDeviceFarmException ex) {
             throw new MojoExecutionException(String.format("Finding Device Pool '%s' Failed!", devicePoolName), ex);
         }
+
+        // Verify test package exists before starting upload of application.
+
+        try {
+            if (testFrameworkType != TestType.BUILTIN_FUZZ && testFrameworkType != TestType.BUILTIN_EXPLORER) {
+                if (!StringUtils.isNullOrEmpty(uploadTestFilename)) {
+                    if (!Files.exists(Paths.get(uploadTestFilename))) {
+                        throw new FileNotFoundException(uploadTestFilename);
+                    }
+                } else {
+                    throw new RuntimeException("uploadTestFilename configuration property is not set!");
+                }
+            }
+        } catch (Exception ex) {
+            throw new MojoExecutionException("Upload Test Package Failed!", ex);
+        }
+
+        // Upload Application Under Test
 
         Upload appUpload = null;
 
@@ -384,21 +412,7 @@ public class DeviceFarmRunner
             throw new MojoExecutionException("Upload Application Package Failed!", ex);
         }
 
-        if (testFrameworkType != TestType.BUILTIN_FUZZ && testFrameworkType != TestType.BUILTIN_EXPLORER) {
-            if (!StringUtils.isNullOrEmpty(uploadTestFilename)) {
-                if (!Files.exists(Paths.get(uploadTestFilename))) {
-                    throw new MojoExecutionException(String.format("uploadTestFilename configuration property filename does not exist!"));
-                }
-            } else {
-                throw new MojoExecutionException("uploadTestFilename configuration property is not set!");
-            }
-        }
-
-        getLog().info(String.format("Test Framework %s", testFrameworkType.toString()));
-
-        if (testFrameworkType != TestType.BUILTIN_FUZZ && testFrameworkType != TestType.BUILTIN_EXPLORER) {
-            getLog().info(String.format("Appium Version %s", appiumVersion));
-        }
+        // Begin Scheduling Run
 
         ScheduleRunTest testSchedule = new ScheduleRunTest();
 
@@ -780,14 +794,27 @@ public class DeviceFarmRunner
             }
         }
 
+        File outputDirectory = new File(projectBuildDir, downloadArtifactPath);
+
+        getLog().info(String.format("Downloading Run Artifacts into %s", outputDirectory.getAbsolutePath()));
+
         String runArn = runResult.getRun().getArn();
 
         try {
+            Map<String, File> files = client.getArtifacts(runArn, outputDirectory);
 
-            client.getArtifacts(runArn, outputDirectory);
+            getLog().info(String.format("Downloaded %s Run Artifact File(s)", files.size()));
+
+            if (getLog().isDebugEnabled()) {
+                for (String filename : files.keySet()) {
+                    getLog().debug(String.format("Downloaded Artifact %s", files.get(filename).getAbsolutePath()));
+                }
+            }
         } catch (Exception ex) {
             throw new MojoExecutionException(String.format("Error Downloading Test Run Artifacts! Run Arn: %s", runArn), ex);
         }
+
+        getLog().info("Execution Exited Normally");
     }
 
     private void displayBanner() {
