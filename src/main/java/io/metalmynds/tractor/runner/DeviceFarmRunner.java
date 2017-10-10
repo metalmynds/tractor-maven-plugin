@@ -33,6 +33,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
@@ -111,9 +112,9 @@ public class DeviceFarmRunner
     private String uploadTestDataFilename;
 
     /**
-     * NOT IMPLEMENTED Filenames of auxiliary Packages Android or iOS to upload.
+     * Filenames of auxiliary Packages Android or iOS to upload.
      */
-    @Parameter // NOT IMPLEMENTED
+    @Parameter
     private String uploadAuxiliaryFilenames;
 
     /**
@@ -333,7 +334,7 @@ public class DeviceFarmRunner
     private long statusPollingInterval;
 
     /**
-     * Tractor Test Driver Pooling Interval.
+     * Test Run Artifacts Download Path.
      */
     @Parameter(defaultValue = "/artifacts")
     private String downloadArtifactPath;
@@ -422,6 +423,39 @@ public class DeviceFarmRunner
             }
         } catch (Exception ex) {
             throw new MojoExecutionException("Upload Application Package Failed!", ex);
+        }
+
+
+        // Upload Auxiliary Applications
+
+        List<String> auxiliaryApplicationArns = null;
+
+        if (!StringUtils.isNullOrEmpty(uploadAuxiliaryFilenames)) {
+
+            String[] files = uploadAuxiliaryFilenames.split(",");
+
+            auxiliaryApplicationArns = new ArrayList<>();
+
+            try {
+
+                Upload auxiliaryUpload;
+
+                for (String auxiliaryFilename : files) {
+
+                    if (Files.exists(Paths.get(auxiliaryFilename))) {
+                        getLog().info(String.format("Uploading Auxiliary Application %s", auxiliaryFilename));
+                        auxiliaryUpload = client.uploadApp(project, uploadApplicationFilename);
+                        auxiliaryApplicationArns.add(auxiliaryUpload.getArn());
+                        getLog().debug(String.format("Upload Auxiliary Application Arn: %s", auxiliaryUpload.getArn()));
+                    } else {
+                        throw new FileNotFoundException(uploadApplicationFilename);
+                    }
+                }
+
+            } catch (Exception ex) {
+                throw new MojoExecutionException("Upload Auxiliary Application Package Failed!", ex);
+            }
+
         }
 
         // Begin Scheduling Run
@@ -718,6 +752,14 @@ public class DeviceFarmRunner
 
         ScheduleRunConfiguration runConfiguration = new ScheduleRunConfiguration();
 
+        // Specify Auxiliary Applications
+
+        if (auxiliaryApplicationArns != null) {
+            runConfiguration.withAuxiliaryApps(auxiliaryApplicationArns);
+        }
+
+        // Billing
+
         runConfiguration.setBillingMethod(runBillingMethod);
 
         // Upload Test Data
@@ -816,7 +858,7 @@ public class DeviceFarmRunner
 
         DeviceMinutes minutesUsed = runResult.getRun().getDeviceMinutes();
 
-        getLog().info(String.format("Device Metered Usage %s Minute(s)", minutesUsed == null ? "0" : minutesUsed.getMetered() ));
+        getLog().info(String.format("Device Metered Usage %s Minute(s)", minutesUsed == null ? "0" : minutesUsed.getMetered()));
 
         File outputDirectory = new File(projectBuildDir, downloadArtifactPath);
 
@@ -825,13 +867,13 @@ public class DeviceFarmRunner
         String runArn = runResult.getRun().getArn();
 
         try {
-            Map<String, File> files = client.getArtifacts(runArn, outputDirectory);
+            List<Path> files = client.getArtifacts(runArn, outputDirectory);
 
             getLog().info(String.format("Downloaded %s Run Artifact File(s)", files.size()));
 
             if (getLog().isDebugEnabled()) {
-                for (String filename : files.keySet()) {
-                    getLog().debug(String.format("Downloaded Artifact %s", files.get(filename).getAbsolutePath()));
+                for (Path path : files) {
+                    getLog().debug(String.format("Downloaded Artifact %s", path.toAbsolutePath().toString()));
                 }
             }
         } catch (Exception ex) {
