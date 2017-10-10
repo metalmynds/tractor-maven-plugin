@@ -171,6 +171,18 @@ public class DeviceFarmRunner
     private Integer runTimeoutMinutes;
 
     /**
+     * Controls Video Capture.
+     */
+    @Parameter(defaultValue = "true")
+    private Boolean recordVideo;
+
+    /**
+     * Controls Performance Monitoring.
+     */
+    @Parameter(defaultValue = "true")
+    private Boolean performanceMonitoring;
+
+    /**
      * Billing Method
      */
     @Parameter(defaultValue = "METERED")
@@ -415,6 +427,14 @@ public class DeviceFarmRunner
         // Begin Scheduling Run
 
         ScheduleRunTest testSchedule = new ScheduleRunTest();
+
+        if (!recordVideo) {
+            testSchedule.addParametersEntry("video_recording", "false");
+        }
+
+        if (!performanceMonitoring) {
+            testSchedule.addParametersEntry("app_performance_monitoring", "false");
+        }
 
         try {
 
