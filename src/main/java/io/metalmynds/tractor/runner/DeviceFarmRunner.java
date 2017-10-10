@@ -856,6 +856,12 @@ public class DeviceFarmRunner
             }
         }
 
+        // We Made It!
+
+        String totals = runResult.getRun().getCounters().toString().replace("{","").replace("}","");
+
+        getLog().debug(totals);
+
         DeviceMinutes minutesUsed = runResult.getRun().getDeviceMinutes();
 
         getLog().info(String.format("Device Metered Usage %s Minute(s)", minutesUsed == null ? "0" : minutesUsed.getMetered()));
@@ -880,10 +886,9 @@ public class DeviceFarmRunner
             throw new MojoExecutionException(String.format("Error Downloading Test Run Artifacts! Run Arn: %s", runArn), ex);
         }
 
-        getLog().info("Execution Exited Normally");
     }
 
     private void displayBanner() {
-        System.out.println(String.format("        ,----,                                                        \n      ,/   .`|                                                        \n    ,`   .'  :                              ___                       \n  ;    ;     /                            ,--.'|_                     \n.'___,/    ,' __  ,-.                     |  | :,'   ,---.    __  ,-. \n|    :     |,' ,'/ /|                     :  : ' :  '   ,'\\ ,' ,'/ /| \n;    |.';  ;'  | |' | ,--.--.     ,---. .;__,'  /  /   /   |'  | |' | \n`----'  |  ||  |   ,'/       \\   /     \\|  |   |  .   ; ,. :|  |   ,' \n    '   :  ;'  :  / .--.  .-. | /    / ':__,'| :  '   | |: :'  :  /   \n    |   |  '|  | '   \\__\\/: . ..    ' /   '  : |__'   | .; :|  | '    \n    '   :  |;  : |   ,\" .--.; |'   ; :__  |  | '.'|   :    |;  : |    \n    ;   |.' |  , ;  /  /  ,.  |'   | '.'| ;  :    ;\\   \\  / |  , ;    \n    '---'    ---'  ;  :   .'   \\   :    : |  ,   /  `----'   ---'     \n                   |  ,     .-./\\   \\  /   ---`-'                     \n                    `--`---'     `----'                               \n                                                                      \n"));
+        System.out.println(String.format("        ,----,                                                        \n      ,/   .`|                                                        \n    ,`   .'  :                              ___                       \n  ;    ;     /                            ,--.'|_                     \n.'___,/    ,' __  ,-.                     |  | :,'   ,---.    __  ,-. \n|    :     |,' ,'/ /|                     :  : ' :  '   ,'\\ ,' ,'/ /| \n;    |.';  ;'  | |' | ,--.--.     ,---. .;__,'  /  /   /   |'  | |' | \n`----'  |  ||  |   ,'/       \\   /     \\|  |   |  .   ; ,. :|  |   ,' \n    '   :  ;'  :  / .--.  .-. | /    / ':__,'| :  '   | |: :'  :  /   \n    |   |  '|  | '   \\__\\/: . ..    ' /   '  : |__'   | .; :|  | '    \n    '   :  |;  : |   ,\" .--.; |'   ; :__  |  | '.'|   :    |;  : |    \n    ;   |.' |  , ;  /  /  ,.  |'   | '.'| ;  :    ;\\   \\  / |  , ;    \n    '---'    ---'  ;  :   .'   \\   :    : |  ,   /  `----'   ---'     \n                   |  ,     .-./\\   \\  /   ---`-'                     \n                    `--`---'     `----'                               \n                                                                      \n    Amazon Device Farm Cultivation\n"));
     }
 }
