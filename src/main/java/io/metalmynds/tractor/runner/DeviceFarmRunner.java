@@ -758,11 +758,11 @@ public class DeviceFarmRunner
 
         String runName = String.format("%s_%s", runNamePrefix, UUID.randomUUID().toString());
 
-        getLog().info(String.format("Starting Run Name: %s", runName));
+        getLog().info(String.format("Starting Run %s", runName));
 
         ScheduleRunResult runResult = client.scheduleRun(project.getArn(), runName, testSchedule.getTestPackageArn(), devicePool.getArn(), testSchedule, runTimeoutMinutes, runConfiguration);
 
-        getLog().debug(String.format("Scheduled Run Result Arn: %s", runResult.getRun().getArn()));
+        getLog().debug(String.format("Run Result Arn: %s", runResult.getRun().getArn()));
 
         ExecutionStatus status = null;
 
@@ -793,6 +793,10 @@ public class DeviceFarmRunner
                 throw new MojoExecutionException(String.format("Run Polling Thread interrupted while waiting for the Run to complete!"));
             }
         }
+
+        DeviceMinutes minutesUsed = runResult.getRun().getDeviceMinutes();
+
+        getLog().info(String.format("Device Metered Usage %s Minute(s)", minutesUsed == null ? "0" : minutesUsed.getMetered() ));
 
         File outputDirectory = new File(projectBuildDir, downloadArtifactPath);
 
