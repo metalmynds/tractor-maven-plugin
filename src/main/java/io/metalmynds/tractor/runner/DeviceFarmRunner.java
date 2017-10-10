@@ -374,7 +374,9 @@ public class DeviceFarmRunner
 
         try {
             project = client.getProject(projectName);
-            getLog().debug(String.format("Project Arn: %s", project.getArn()));
+            if (getLog().isDebugEnabled()) {
+                getLog().debug(String.format("Project: %s", project.getArn()));
+            }
         } catch (Exception ex) {
             throw new MojoExecutionException(String.format("Locate Device Farm Project '%s' failed!", projectName), ex);
         }
@@ -386,7 +388,9 @@ public class DeviceFarmRunner
         try {
 
             devicePool = client.getDevicePool(project, devicePoolName);
-
+            if (getLog().isDebugEnabled()) {
+                getLog().debug(String.format("Device Pool: %s", devicePool.getArn()));
+            }
             getLog().info(String.format("Located Device Pool %s", devicePoolName));
 
         } catch (AWSDeviceFarmException ex) {
@@ -417,7 +421,9 @@ public class DeviceFarmRunner
             if (Files.exists(Paths.get(uploadApplicationFilename))) {
                 getLog().info(String.format("Uploading Application %s", uploadApplicationFilename));
                 appUpload = client.uploadApp(project, uploadApplicationFilename);
-                getLog().debug(String.format("Upload Application Arn: %s", appUpload.getArn()));
+                if (getLog().isDebugEnabled()) {
+                    getLog().debug(String.format("Application: %s", appUpload.getArn()));
+                }
             } else {
                 throw new FileNotFoundException(uploadApplicationFilename);
             }
@@ -446,7 +452,9 @@ public class DeviceFarmRunner
                         getLog().info(String.format("Uploading Auxiliary Application %s", auxiliaryFilename));
                         auxiliaryUpload = client.uploadApp(project, uploadApplicationFilename);
                         auxiliaryApplicationArns.add(auxiliaryUpload.getArn());
-                        getLog().debug(String.format("Upload Auxiliary Application Arn: %s", auxiliaryUpload.getArn()));
+                        if (getLog().isDebugEnabled()) {
+                            getLog().debug(String.format("Auxiliary Application: %s", auxiliaryUpload.getArn()));
+                        }
                     } else {
                         throw new FileNotFoundException(uploadApplicationFilename);
                     }
@@ -469,6 +477,8 @@ public class DeviceFarmRunner
         if (!performanceMonitoring) {
             testSchedule.addParametersEntry("app_performance_monitoring", "false");
         }
+
+        Upload upload = null;
 
         try {
 
@@ -519,7 +529,7 @@ public class DeviceFarmRunner
 
                     getLog().info(String.format("Uploading Test Package %s", uploadTestFilename));
 
-                    Upload upload = client.uploadTest(project, test);
+                    upload = client.uploadTest(project, test);
 
                     testSchedule
                             .withType(testFrameworkType)
@@ -536,7 +546,7 @@ public class DeviceFarmRunner
 
                     getLog().info(String.format("Uploading Test Package %s", uploadTestFilename));
 
-                    Upload upload = client.uploadTest(project, test);
+                    upload = client.uploadTest(project, test);
 
                     testSchedule
                             .withType(testFrameworkType)
@@ -553,7 +563,7 @@ public class DeviceFarmRunner
 
                     getLog().info(String.format("Uploading Test Package %s", uploadTestFilename));
 
-                    Upload upload = client.uploadTest(project, test);
+                    upload = client.uploadTest(project, test);
 
                     testSchedule
                             .withType(testFrameworkType)
@@ -570,7 +580,7 @@ public class DeviceFarmRunner
 
                     getLog().info(String.format("Uploading Test Package %s", uploadTestFilename));
 
-                    Upload upload = client.uploadTest(project, test);
+                    upload = client.uploadTest(project, test);
 
                     testSchedule
                             .withType(testFrameworkType)
@@ -587,7 +597,7 @@ public class DeviceFarmRunner
 
                     getLog().info(String.format("Uploading Test Package %s", uploadTestFilename));
 
-                    Upload upload = client.uploadTest(project, test);
+                    upload = client.uploadTest(project, test);
 
                     testSchedule
                             .withType(testFrameworkType)
@@ -604,7 +614,7 @@ public class DeviceFarmRunner
 
                     getLog().info(String.format("Uploading Test Package %s", uploadTestFilename));
 
-                    Upload upload = client.uploadTest(project, test);
+                    upload = client.uploadTest(project, test);
 
                     testSchedule
                             .withType(testFrameworkType)
@@ -623,7 +633,7 @@ public class DeviceFarmRunner
 
                     getLog().info(String.format("Uploading Test Package %s", uploadApplicationFilename));
 
-                    Upload upload = client.uploadTest(project, test);
+                    upload = client.uploadTest(project, test);
 
                     Map<String, String> parameters = new HashMap<String, String>();
                     if (test.getTags() != null && !test.getTags().isEmpty()) {
@@ -647,7 +657,7 @@ public class DeviceFarmRunner
 
                     getLog().info(String.format("Uploading Test Package %s", uploadApplicationFilename));
 
-                    Upload upload = client.uploadTest(project, test);
+                    upload = client.uploadTest(project, test);
 
                     testSchedule
                             .withType(testFrameworkType)
@@ -665,7 +675,7 @@ public class DeviceFarmRunner
 
                     getLog().info(String.format("Uploading Test Package %s", uploadApplicationFilename));
 
-                    Upload upload = client.uploadTest(project, test);
+                    upload = client.uploadTest(project, test);
 
                     testSchedule
                             .withType(testFrameworkType)
@@ -683,7 +693,7 @@ public class DeviceFarmRunner
 
                     getLog().info(String.format("Uploading Test Package %s", uploadApplicationFilename));
 
-                    Upload upload = client.uploadTest(project, test);
+                    upload = client.uploadTest(project, test);
 
                     testSchedule
                             .withType(testFrameworkType)
@@ -699,7 +709,7 @@ public class DeviceFarmRunner
 
                     getLog().info(String.format("Uploading Test Package %s", uploadApplicationFilename));
 
-                    Upload upload = client.uploadTest(project, test);
+                    upload = client.uploadTest(project, test);
 
                     testSchedule
                             .withType(testFrameworkType)
@@ -716,7 +726,7 @@ public class DeviceFarmRunner
 
                     getLog().info(String.format("Uploading Test Package %s", uploadApplicationFilename));
 
-                    Upload upload = client.uploadTest(project, test);
+                    upload = client.uploadTest(project, test);
 
                     testSchedule
                             .withType(testFrameworkType)
@@ -727,6 +737,11 @@ public class DeviceFarmRunner
 
 
             }
+
+            if (upload != null && getLog().isDebugEnabled()) {
+                getLog().debug(String.format("Test Upload: %s", upload.getArn()));
+            }
+
         } catch (Exception ex) {
             throw new MojoExecutionException("Upload Test Package Failed!", ex);
         }
@@ -824,7 +839,9 @@ public class DeviceFarmRunner
 
         ScheduleRunResult runResult = client.scheduleRun(project.getArn(), runName, appUpload.getArn(), devicePool.getArn(), testSchedule, runTimeoutMinutes, runConfiguration);
 
-        getLog().debug(String.format("Run Result Arn: %s", runResult.getRun().getArn()));
+        if (getLog().isDebugEnabled()) {
+            getLog().debug(String.format("Run Result: %s", runResult.getRun().getArn()));
+        }
 
         ExecutionStatus status = null;
 
@@ -858,9 +875,11 @@ public class DeviceFarmRunner
 
         // We Made It!
 
-        String totals = runResult.getRun().getCounters().toString().replace("{","").replace("}","");
+        String totals = runResult.getRun().getCounters().toString().replace("{", "").replace("}", "");
 
-        getLog().debug(totals);
+        if (getLog().isDebugEnabled()) {
+            getLog().debug(totals);
+        }
 
         DeviceMinutes minutesUsed = runResult.getRun().getDeviceMinutes();
 
