@@ -55,7 +55,7 @@
         </dependency>
         <dependency>
             <groupId>io.metalmynds.tractor</groupId>
-            <artifactId>devicefarm-wrapper</artifactId>
+            <artifactId>devicefarm-cultivator</artifactId>
             <version>${tractor.version}</version>
         </dependency>
         <dependency>
