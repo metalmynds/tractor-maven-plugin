@@ -27,7 +27,7 @@
         <maven.plugin.version>3.5</maven.plugin.version>
         <maven.plugin.api.version>3.5.0</maven.plugin.api.version>
         <aws.sdk.version>1.11.205</aws.sdk.version>
-        <tractor.plugin.version>1.0-SNAPSHOT</tractor.plugin.version>
+        <tractor.version>1.0-SNAPSHOT</tractor.version>
         <maven.compiler.plugin.version>3.2</maven.compiler.plugin.version>
 
         <!-- Build -->
@@ -54,9 +54,9 @@
             <version>${aws.sdk.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.metalmynds</groupId>
-            <artifactId>devicefarm-tractor</artifactId>
-            <version>${tractor.plugin.version}</version>
+            <groupId>io.metalmynds.tractor</groupId>
+            <artifactId>devicefarm-wrapper</artifactId>
+            <version>${tractor.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
