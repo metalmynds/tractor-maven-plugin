@@ -1,7 +1,7 @@
 # Tractor-Maven-Plugin ![Build Status](https://travis-ci.org/metalmynds/tractor-maven-plugin.svg?branch=master)
 Amazon Device Farm Test Execution and Result Management Maven Plugin.
 
-The project supports all framework types and allows for the execution of several more including [Cucumber-JVM](https://cucumber.io/docs/reference/jvm),[Serenity BDD](http://www.thucydides.info/#/) and [JBehave](https://github.com/serenity-bdd/serenity-jbehave).
+The project supports all framework types and allows for the execution of several more including [Cucumber-JVM](https://cucumber.io/docs/reference/jvm), [Serenity BDD](http://www.thucydides.info/#/) and [JBehave](https://github.com/serenity-bdd/serenity-jbehave).
 
 Example POM
 
