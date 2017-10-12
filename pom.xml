@@ -44,6 +44,15 @@
         <gpg.executable.filename>gpg</gpg.executable.filename>
 
     </properties>
+
+    <!-- Snapshot Repository -->
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.maven</groupId>
