@@ -40,6 +40,9 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <compiler.version>1.8</compiler.version>
 
+        <!-- Filenames -->
+        <gpg.executable.filename>gpg</gpg.executable.filename>
+
     </properties>
     <dependencies>
         <dependency>
@@ -121,6 +124,9 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
                         <version>${maven.gpg.plugin.version}</version>
+                        <configuration>
+                            <executable>${gpg.executable.filename}</executable>
+                        </configuration>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
