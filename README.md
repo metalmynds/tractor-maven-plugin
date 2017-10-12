@@ -8,7 +8,7 @@ Example POM
     <build>
         <plugins>
             <plugin>
-                <groupId>io.metalmynds</groupId>
+                <groupId>io.metalmynds.tractor</groupId>
                 <artifactId>tractor-maven-plugin</artifactId>
                 <version>1.0-SNAPSHOT</version>
                 <configuration>
