@@ -1,4 +1,4 @@
-# Tractor-Maven-Plugin
+# Tractor-Maven-Plugin ![Build Status](https://travis-ci.org/metalmynds/tractor-maven-plugin.svg?branch=master)
 Amazon Device Farm Test Execution and Result Management Maven Plugin
 
 Project is ready for beta testing, it supports all framework types, please report any issues.
