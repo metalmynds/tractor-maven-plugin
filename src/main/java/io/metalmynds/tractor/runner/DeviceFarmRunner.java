@@ -45,11 +45,6 @@ import java.util.*;
 @Mojo(name = "drive", defaultPhase = LifecyclePhase.INTEGRATION_TEST)
 public class DeviceFarmRunner
         extends AbstractMojo {
-    /**
-     * Project Build Directory
-     */
-    @Parameter(defaultValue = "${project.build.directory}", readonly = true)
-    private String projectBuildDir;
 
     /**
      * Name of Device Farm Project.
@@ -249,12 +244,6 @@ public class DeviceFarmRunner
     @Parameter
     private String frameworkExplorerPassword;
 
-//    /**
-//     * Tests to Execute using the JUnit, Python, TestNG frameworks both Web and Native.
-//     */
-//    @Parameter
-//    private String frameworkAppiumTests;
-
     /**
      * Calabash Features to execute.
      */
@@ -336,7 +325,7 @@ public class DeviceFarmRunner
     /**
      * Test Run Artifacts Download Path.
      */
-    @Parameter(defaultValue = "/artifacts")
+    @Parameter(defaultValue = "${project.build.directory}/artifacts", property = "download.artifact.path")
     private String downloadArtifactPath;
 
     public void execute()
@@ -887,7 +876,7 @@ public class DeviceFarmRunner
 
         getLog().info(String.format("Device Metered Usage %s Minute(s)", minutesUsed == null ? "0" : minutesUsed.getMetered()));
 
-        File outputDirectory = new File(projectBuildDir, downloadArtifactPath);
+        File outputDirectory = new File(downloadArtifactPath);
 
         getLog().info(String.format("Downloading Run Artifacts into %s", outputDirectory.getAbsolutePath()));
 
